@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visual Cryptography System & Seminar Portal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <div class="logo">🔐 VisualCrypto Studio</div>
+  <div class="nav-tabs">
+    <button class="nav-btn active" onclick="switchTab('encryptTab', this)">1. Encrypt (Draw / Text / Image)</button>
+    <button class="nav-btn" onclick="switchTab('decryptTab', this)">2. Interactive Decryptor</button>
+    <button class="nav-btn" onclick="switchTab('seminarTab', this)">3. Seminar & Theory Guide</button>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- ==================== TAB 1: ENCRYPT ==================== -->
+  <section id="encryptTab" class="page-section active">
+    <div class="card">
+      <h1>Create Visual Cryptography Shares</h1>
+      <p class="subtitle">Choose an input method below to convert your secret into two random-looking encrypted images.</p>
+
+      <div class="mode-bar">
+        <button class="mode-btn active" onclick="switchMode('drawMode', this)">✏️ Scribbler (Draw)</button>
+        <button class="mode-btn" onclick="switchMode('textMode', this)">⌨️ Secret Text</button>
+        <button class="mode-btn" onclick="switchMode('uploadMode', this)">🖼️ Upload Image</button>
+      </div>
+
+      <!-- Mode 1: Scribbler -->
+      <div id="drawMode" class="input-area">
+        <p class="hint">Draw a signature, number, or symbol inside the white box below:</p>
+        <canvas id="drawCanvas" width="240" height="160"></canvas>
+        <div class="btn-group">
+          <button class="btn-secondary" onclick="clearPad()">Clear Pad</button>
+          <button class="btn-primary" onclick="processScribble()">Encrypt Drawing →</button>
+        </div>
+      </div>
+
+      <!-- Mode 2: Text Input -->
+      <div id="textMode" class="input-area hidden">
+        <p class="hint">Enter a short secret word, PIN, or code (max 15 chars recommended):</p>
+        <input type="text" id="secretTextInput" placeholder="e.g., TOP SECRET or 4829" maxlength="20">
+        <button class="btn-primary" onclick="processText()">Encrypt Text →</button>
+      </div>
+
+      <!-- Mode 3: Upload Image -->
+      <div id="uploadMode" class="input-area hidden">
+        <p class="hint">Upload any PNG/JPG image (automatically converted to high-contrast B&W):</p>
+        <input type="file" id="imageInput" accept="image/*">
+        <button class="btn-primary" onclick="processUpload()">Encrypt Image →</button>
+      </div>
+    </div>
+
+    <!-- Generated Results -->
+    <div class="card hidden" id="resultsCard">
+      <div class="results-header">
+        <div>
+          <h2 class="no-margin">Generated Cryptographic Shares</h2>
+          <p class="subtitle no-margin">Neither Share 1 nor Share 2 reveals anything on its own.</p>
+        </div>
+        <button class="btn-primary btn-success" onclick="sendToDecryptor()">Test in Interactive Decryptor →</button>
+      </div>
+
+      <div class="shares-grid">
+        <div class="share-box">
+          <h3>Processed Binary Input</h3>
+          <canvas id="origCanvas" class="preview"></canvas>
+          <p class="small-muted">1-bit Black & White Matrix</p>
+        </div>
+
+        <div class="share-box">
+          <h3>Share 1 (Key Transparency)</h3>
+          <canvas id="share1Canvas" class="preview"></canvas><br>
+          <button class="btn-secondary" onclick="downloadCanvas('share1Canvas', 'share1.png')">⬇ Download Share 1</button>
+        </div>
+
+        <div class="share-box">
+          <h3>Share 2 (Cipher Transparency)</h3>
+          <canvas id="share2Canvas" class="preview"></canvas><br>
+          <button class="btn-secondary" onclick="downloadCanvas('share2Canvas', 'share2.png')">⬇ Download Share 2</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 2: DECRYPT ==================== -->
+  <section id="decryptTab" class="page-section">
+    <div class="card">
+      <h1>Interactive Transparency Stacker</h1>
+      <p class="subtitle">Visual Cryptography requires <strong>zero mathematical computation</strong> to decrypt. Slide Share 2 directly over Share 1 to reveal the hidden secret with your own eyes.</p>
+
+      <div class="upload-shares-bar">
+        <div>
+          <label class="file-label">Optional: Load custom Share 1</label>
+          <input type="file" id="uploadShare1" accept="image/*">
+        </div>
+        <div>
+          <label class="file-label">Optional: Load custom Share 2</label>
+          <input type="file" id="uploadShare2" accept="image/*">
+        </div>
+      </div>
+
+      <div class="slider-container">
+        <label for="alignSlider" class="slider-label">
+          Horizontal Alignment Offset: <span id="offsetLabel" class="accent-text">120px</span>
+        </label>
+        <input type="range" id="alignSlider" min="-250" max="250" value="120" oninput="updateAlignment()">
+        <div class="snap-wrap">
+          <button class="btn-secondary" onclick="snapAlign()">Snap to Exact Alignment (0px)</button>
+        </div>
+      </div>
+
+      <div class="alignment-stage">
+        <canvas id="stackCanvas"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 3: SEMINAR GUIDE ==================== -->
+  <section id="seminarTab" class="page-section">
+    <div class="card">
+      <span class="badge">Academic & Seminar Overview</span>
+      <h1>Understanding Visual Cryptography</h1>
+      <p><strong>Cryptography</strong> is the science of securing information and communications so that only intended recipients can read and process it. Traditional cryptography relies on complex mathematical algorithms (like AES or RSA) and requires computers to decrypt data.</p>
+      <p><strong>Visual Cryptography (VC)</strong> is a specialized cryptographic technique where visual information (pictures, text, handwriting) is encrypted in such a way that <strong>decryption can be performed purely by the human visual system</strong>—without any computers, software, or cryptographic keys.</p>
+    </div>
+
+    <div class="seminar-grid">
+      <div class="card">
+        <span class="badge">History & Creators</span>
+        <h2>Who Invented It?</h2>
+        <p>Visual Cryptography was pioneered in <strong>1994</strong> by two renowned Israeli cryptographers:</p>
+        <ul>
+          <li><strong>Moni Naor</strong> (Weizmann Institute of Science)</li>
+          <li><strong>Adi Shamir</strong> (Co-inventor of the RSA encryption algorithm)</li>
+        </ul>
+        <p>They introduced the concept at the <em>EUROCRYPT '94</em> conference, proving that a secret image could be split into <em>n</em> transparency sheets where any <em>k</em> sheets stacked together reveal the secret, while <em>k - 1</em> sheets reveal zero information.</p>
+      </div>
+
+      <div class="card">
+        <span class="badge">How The Math Works</span>
+        <h2>Pixel Expansion (2-out-of-2)</h2>
+        <p>In our basic <strong>(2, 2) threshold scheme</strong>, every single pixel from the original image is expanded into a <strong>2×2 block of subpixels</strong> across two shares:</p>
+        <table>
+          <tr>
+            <th>Original Pixel</th>
+            <th>Share 1 Pattern</th>
+            <th>Share 2 Pattern</th>
+            <th>Stacked Result</th>
+          </tr>
+          <tr>
+            <td><strong>White (0)</strong></td>
+            <td>Random 50% Black</td>
+            <td><strong>Identical</strong> to Share 1</td>
+            <td>50% Black / 50% White (Appears Gray/White)</td>
+          </tr>
+          <tr>
+            <td><strong>Black (1)</strong></td>
+            <td>Random 50% Black</td>
+            <td><strong>Inverse</strong> of Share 1</td>
+            <td>100% Solid Black</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="badge">Applications</span>
+      <h2>Where Is Visual Cryptography Used?</h2>
+      <div class="seminar-grid">
+        <div>
+          <h3>🏦 Banking & Online Authentication</h3>
+          <p>Used to prevent phishing attacks. A bank displays one share on screen while the user holds the second share on a physical card or mobile app—confirming the website is genuine.</p>
+        </div>
+        <div>
+          <h3>🗳️ Electronic Voting Systems</h3>
+          <p>Provides verifiable voting receipts where voters can verify their vote was recorded accurately without allowing them to prove how they voted to third parties.</p>
+        </div>
+        <div>
+          <h3>🧬 Biometric Template Protection</h3>
+          <p>Fingerprint and iris scans are split into two shares stored in separate databases. Even if hackers breach one server, the biometric data cannot be reconstructed.</p>
+        </div>
+        <div>
+          <h3>🛡️ Military & Field Operations</h3>
+          <p>Allows field agents to decode maps, coordinates, or launch codes using printed overhead transparencies when electronic devices are compromised or unavailable.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="badge">Seminar Q&A Points</span>
+      <h2>Advantages vs. Limitations</h2>
+      <table>
+        <tr>
+          <th>Key Advantages</th>
+          <th>Known Limitations</th>
+        </tr>
+        <tr>
+          <td>✅ <strong>Information-Theoretic Security:</strong> Mathematically impossible to crack with infinite computing power if you only possess one share.</td>
+          <td>⚠️ <strong>Loss of Contrast:</strong> White regions become 50% gray when stacked, reducing visual sharpness by half.</td>
+        </tr>
+        <tr>
+          <td>✅ <strong>Zero Hardware Needed to Decrypt:</strong> Works with physical transparent plastic sheets and human eyes.</td>
+          <td>⚠️ <strong>Pixel Expansion:</strong> A 2×2 subpixel split doubles the width and height of the output images (4× total area).</td>
+        </tr>
